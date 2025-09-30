@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Enhanced Product Scraper - Complete Parameter Extraction",
+  "version": "2.3.0",
+  "description": "Advanced product scraper with comprehensive parameter extraction including ratings breakdown, colors, delivery types, payment methods, and all product details from Flipkart and Amazon",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.flipkart.com/*",
+    "https://www.amazon.in/*",
+    "https://amazon.in/*",
+    "https://amazon.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.flipkart.com/*",
+        "https://www.amazon.in/*",
+        "https://amazon.in/*",
+        "https://amazon.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Enhanced Product Scraper - Complete Parameters"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "popup.js"],
+      "matches": [
+        "https://www.flipkart.com/*",
+        "https://www.amazon.in/*",
+        "https://amazon.in/*",
+        "https://amazon.com/*"
+      ]
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "block_telemetry",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
