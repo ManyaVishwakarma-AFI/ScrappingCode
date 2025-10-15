@@ -404,23 +404,14 @@ async function scrapeNextProduct() {
 }
 
 async function injectContentScript(tabId) {
-  // ping first; if content.js is already present, skip reinjection
-  const injected = await chrome.tabs.sendMessage(tabId, { action: 'ping' })
-    .then(() => true)
-    .catch(() => false);
-
-  if (injected) {
-    debugLog('Content script already present, skipping injection');
-    return;
-  }
   try {
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ['content.js']
+      files: ['Content.js']
     });
     debugLog('Content script injected successfully');
   } catch (error) {
-    debugLog('Content script injection failed:', error.message);
+    debugLog('Content script already injected or injection failed:', error.message);
   }
 }
 

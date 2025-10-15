@@ -18,7 +18,7 @@
     "https://amazon.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "Background.js"
   },
   "content_scripts": [
     {
@@ -28,17 +28,17 @@
         "https://amazon.in/*",
         "https://amazon.com/*"
       ],
-      "js": ["content.js"],
+      "js": ["Content.js"],
       "run_at": "document_idle"
     }
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "Popup.html",
     "default_title": "Enhanced Product Scraper - Complete Parameters"
   },
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "popup.js"],
+      "resources": ["Popup.html", "Popup.js"],
       "matches": [
         "https://www.flipkart.com/*",
         "https://www.amazon.in/*",
