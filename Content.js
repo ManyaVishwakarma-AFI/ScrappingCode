@@ -3,10 +3,7 @@
 (() => {
   const SELECTORS = {
     flipkart: {
-      // From the search page
       productUrl: 'a.CGtC98, a._1fQZEK',
-
-      // From the product page
       productName: 'span.VU-ZEz',
       currentPrice: 'div.Nx9bqj.CxhGGd',
       previousPrice: 'div.yRaY8j.A6-E6v',
@@ -19,12 +16,25 @@
       seller: '#sellerName span',
       overallRating: 'div.XQDdHH',
       totalRatingsAndReviews: 'span.Wphh3N',
-      starRatings: 'ul.-psZUR li.fQ-FC1', // This will get all 5 star ratings
+      starRatings: 'ul.-psZUR li.fQ-FC1',
       availableColors: 'ul.hSEbzK li.aJWdJI a',
     },
     amazon: {
-      // Add Amazon selectors here if needed in the future
       productUrl: 'a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal',
+      productName: '#productTitle',
+      currentPrice: '.a-price-whole',
+      previousPrice: '.a-text-price .a-offscreen',
+      discount: '.savingsPercentage',
+      deliveryDetails: '#delivery-message, #mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE',
+      warrantyInfo: '#warranty-nodal', // This is a guess, may need refinement
+      description: '#productDescription',
+      highlights: '#feature-bullets .a-list-item',
+      paymentMethods: null, // Amazon doesn't typically list these on the page
+      seller: '#merchant-info, #bylineInfo',
+      overallRating: '#acrPopover .a-icon-alt',
+      totalRatingsAndReviews: '#acrCustomerReviewText',
+      starRatings: '#histogramTable .a-histogram-row',
+      availableColors: '#variation_color_name .selection',
     },
   };
 
@@ -54,34 +64,55 @@
   function scrapeProductDetails() {
     if (!site) return null;
 
-    const s = SELECTORS.flipkart; // Assuming flipkart for now
+    const s = SELECTORS[site];
 
     const getText = (selector) => {
+      if (!selector) return null;
       const el = document.querySelector(selector);
       return el ? el.innerText.trim() : null;
     };
 
     const getList = (selector) => {
+      if (!selector) return [];
       return Array.from(document.querySelectorAll(selector)).map(el => el.innerText.trim());
     };
 
     const getStarRatings = (selector) => {
+        if (!selector) return {};
         const ratings = {};
         const ratingElements = document.querySelectorAll(selector);
-        ratingElements.forEach((li, index) => {
-            const star = 5 - index; // 5 star, 4 star, etc.
-            const count = li.querySelector('div.BArk-j')?.innerText.trim() || '0';
-            ratings[`${star}_star_ratings`] = count;
-        });
+
+        if (site === 'flipkart') {
+            ratingElements.forEach((li, index) => {
+                const star = 5 - index;
+                const count = li.querySelector('div.BArk-j')?.innerText.trim() || '0';
+                ratings[`${star}_star_ratings`] = count;
+            });
+        } else if (site === 'amazon') {
+            ratingElements.forEach((row) => {
+                const starText = row.querySelector('.a-histogram-star-count a')?.innerText.trim();
+                const percentageText = row.querySelector('.a-histogram-bar a')?.innerText.trim();
+                if(starText && percentageText) {
+                    const star = starText.match(/\d/)[0];
+                    ratings[`${star}_star_ratings`] = percentageText;
+                }
+            });
+        }
         return ratings;
     };
 
     const getAvailableColors = (selector) => {
+        if (!selector) return [];
         const colors = new Set();
-        document.querySelectorAll(selector).forEach(el => {
-            const colorName = el.querySelector('div.V3Zflw')?.innerText.trim();
-            if (colorName) colors.add(colorName);
-        });
+        if (site === 'flipkart') {
+            document.querySelectorAll(selector).forEach(el => {
+                const colorName = el.querySelector('div.V3Zflw')?.innerText.trim();
+                if (colorName) colors.add(colorName);
+            });
+        } else if (site === 'amazon') {
+            const colorEl = document.querySelector(selector);
+            if (colorEl) colors.add(colorEl.innerText.trim());
+        }
         return Array.from(colors);
     }
 

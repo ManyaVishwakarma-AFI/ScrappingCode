@@ -4,9 +4,6 @@
   "version": "2.3.0",
   "description": "Advanced product scraper with comprehensive parameter extraction including ratings breakdown, colors, delivery types, payment methods, and all product details from Flipkart and Amazon",
   "permissions": [
-    "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback",
     "storage",
     "scripting",
     "activeTab"
@@ -47,13 +44,4 @@
       ]
     }
   ],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "block_telemetry",
-        "enabled": true,
-        "path": "rules.json"
-      }
-    ]
-  }
 }

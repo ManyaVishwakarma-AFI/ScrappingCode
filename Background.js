@@ -770,52 +770,7 @@ chrome.runtime.onStartup.addListener(() => {
 });
 chrome.runtime.onInstalled.addListener(async (details) => {
   debugLog('Extension installed/updated:', details.reason);
-  await setupNetworkBlocking();
 });
-
-async function setupNetworkBlocking() {
-  try {
-    const existing = await chrome.declarativeNetRequest.getDynamicRules();
-    const ids = existing.map(r => r.id);
-    if (ids.length) {
-      await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: ids });
-    }
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      addRules: [
-        {
-          id: 100,
-          priority: 1,
-          action: { type: "block" },
-          condition: {
-            urlFilter: "*://sonic.fdp.api.flipkart.com/*",
-            resourceTypes: ["xmlhttprequest", "script", "image"]
-          }
-        },
-        {
-          id: 101,
-          priority: 1,
-          action: { type: "block" },
-          condition: {
-            urlFilter: "*://www.facebook.com/tr*",
-            resourceTypes: ["image", "script", "xmlhttprequest"]
-          }
-        },
-        {
-          id: 102,
-          priority: 1,
-          action: { type: "block" },
-          condition: {
-            urlFilter: "*://connect.facebook.net/*",
-            resourceTypes: ["script", "xmlhttprequest"]
-          }
-        }
-      ]
-    });
-    debugLog('Network blocking rules successfully configured');
-  } catch (e) {
-    debugLog('Error setting up network blocking:', e.message);
-  }
-}
 
 // Global error handlers (service worker)
 self.addEventListener('error', (event) => {
